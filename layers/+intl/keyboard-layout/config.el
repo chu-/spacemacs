@@ -49,7 +49,16 @@ any case.")
                ("h" . "h")
                ("j" . "t")
                ("k" . "n")
-               ("l" . "s"))))
+               ("l" . "s")))
+    (norman . (("j" . "h")
+               ("n" . "j")
+               ("i" . "k")
+               ("k" . "l")
+               ;;
+               ("h" . "j")
+               ("j" . "n")
+               ("k" . "i")
+               ("l" . "k"))))
   "The base rebinding map. Dots should be read as `will behave
   as'. It should be a bidirectional mapping, i.e. all present
   keys should be once in each column.")
