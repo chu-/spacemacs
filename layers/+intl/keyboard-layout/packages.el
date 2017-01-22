@@ -141,17 +141,14 @@
     :norman
     (progn
       (kl/set-in-all-evil-states-but-insert
-        "e" 'evil-forward-word-begin
-        "E" 'evil-forward-WORD-begin)
+        "s" 'evil-forward-word-begin
+        "S" 'evil-forward-WORD-begin)
       (kl/set-in-state evil-inner-text-objects-map
-        "e" 'evil-inner-word
-        "E" 'evil-inner-WORD)
+        "s" 'evil-inner-word
+        "S" 'evil-inner-WORD)
       (kl/set-in-state evil-outer-text-objects-map
-        "e" 'evil-a-word
-        "E" 'evil-a-WORD)
-      (kl/set-in-all-evil-states-but-insert
-        "<" 'evil-shift-left
-        ">" 'evil-shift-right))
+        "s" 'evil-a-word
+        "S" 'evil-a-WORD))
     :dvorak
     ;; Invert it twice to reset `k' and `K' for searching
     (dolist (map kl--all-evil-states-but-insert)
@@ -189,7 +186,9 @@
     :loader
     (spacemacs|use-package-add-hook evil-escape :post-init BODY)
     :bepo
-    (setq-default evil-escape-key-sequence "gq")))
+    (setq-default evil-escape-key-sequence "gq")
+    :norman
+    (setq-default evil-escape-key-sequence "te")))
 
 (defun keyboard-layout/pre-init-evil-evilified-state ()
   (kl|config evil-evilified-state
