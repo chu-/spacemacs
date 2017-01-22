@@ -43,7 +43,9 @@
     :bepo
     (setq aw-keys '(?a ?u ?i ?e ?t ?s ?r ?n))
     :dvorak
-    (setq aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s))))
+    (setq aw-keys '(?a ?o ?e ?u ?h ?t ?n ?s))
+    :norman
+    (setq aw-keys '(?a ?s ?e ?t ?n ?i ?o ?h))))
 
 (defun keyboard-layout/pre-init-avy ()
   (kl|config avy
@@ -54,7 +56,9 @@
     :bepo
     (setq-default avy-keys '(?a ?u ?i ?e ?t ?s ?r ?n))
     :dvorak
-    (setq-default avy-keys '(?a ?o ?e ?u ?h ?t ?n ?s))))
+    (setq-default avy-keys '(?a ?o ?e ?u ?h ?t ?n ?s))
+    :norman
+    (setq-default avy-keys '(?a ?s ?e ?t ?n ?i ?o ?h))))
 
 (defun keyboard-layout/pre-init-comint ()
   (kl|config comint-mode
@@ -134,6 +138,20 @@
       (kl/set-in-all-evil-states-but-insert
         "«" 'evil-shift-left
         "»" 'evil-shift-right))
+    :norman
+    (progn
+      (kl/set-in-all-evil-states-but-insert
+        "e" 'evil-forward-word-begin
+        "E" 'evil-forward-WORD-begin)
+      (kl/set-in-state evil-inner-text-objects-map
+        "e" 'evil-inner-word
+        "E" 'evil-inner-WORD)
+      (kl/set-in-state evil-outer-text-objects-map
+        "e" 'evil-a-word
+        "E" 'evil-a-WORD)
+      (kl/set-in-all-evil-states-but-insert
+        "<" 'evil-shift-left
+        ">" 'evil-shift-right))
     :dvorak
     ;; Invert it twice to reset `k' and `K' for searching
     (dolist (map kl--all-evil-states-but-insert)
