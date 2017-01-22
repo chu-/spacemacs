@@ -13,8 +13,8 @@
 ;; PUBLIC VARIABLES
 ;;------------------------------------------------------------------------------
 
-(defvar kl-layout 'dvorak
-  "The keyboard-layout to use. Possible values are `dvorak' and `bepo'.")
+(defvar kl-layout 'norman
+  "The keyboard-layout to use. Possible values are `dvorak', `bepo' and `norman'.")
 
 (defvar kl-enabled-configurations nil
   "If non nil, `keyboard-layout' will enable configurations only
