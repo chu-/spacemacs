@@ -148,7 +148,11 @@
         "S" 'evil-inner-WORD)
       (kl/set-in-state evil-outer-text-objects-map
         "s" 'evil-a-word
-        "S" 'evil-a-WORD))
+        "S" 'evil-a-WORD)
+      (kl/set-in-all-evil-states-but-insert
+        "w" 'evil-search-word-forward
+        "W" 'evil-search-word-backward))
+
     :dvorak
     ;; Invert it twice to reset `k' and `K' for searching
     (dolist (map kl--all-evil-states-but-insert)
