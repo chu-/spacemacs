@@ -29,8 +29,13 @@
     mu4e
     neotree
     org
+    evil-org
+    evil-cleverparens
+    eww
     org-agenda
+    pdf-tools
     ranger
+    term
     twittering-mode
     ))
 
@@ -141,17 +146,11 @@
     :norman
     (progn
       (kl/set-in-all-evil-states-but-insert
-        "s" 'evil-forward-word-begin
-        "S" 'evil-forward-WORD-begin)
-      (kl/set-in-state evil-inner-text-objects-map
-        "s" 'evil-inner-word
-        "S" 'evil-inner-WORD)
-      (kl/set-in-state evil-outer-text-objects-map
-        "s" 'evil-a-word
-        "S" 'evil-a-WORD)
-      (kl/set-in-all-evil-states-but-insert
-        "w" 'evil-search-word-forward
-        "W" 'evil-search-word-backward))
+        "-" 'evil-jump-item
+        "%" 'evil-previous-line-first-non-blank)
+     ;; windows navigation , has been replaced by setting in .spacemacs
+
+      )
 
     :dvorak
     ;; Invert it twice to reset `k' and `K' for searching
@@ -192,7 +191,7 @@
     :bepo
     (setq-default evil-escape-key-sequence "gq")
     :norman
-    (setq-default evil-escape-key-sequence "te")))
+    (setq-default evil-escape-key-sequence "td")))
 
 (defun keyboard-layout/pre-init-evil-evilified-state ()
   (kl|config evil-evilified-state
@@ -415,8 +414,9 @@
     :bepo
     (progn
       (evil-define-key 'normal evil-org-mode-map
-        "t" 'evil-next-line
-        "j" 'org-todo)
+       "t" 'evil-next-line
+       ˙(evil-define-key 'normal evil-org-mode-map "o" '(lambda () (interactive) (evil-org-eol-call 'org-insert-heading)))
+       "j" 'org-todo)
       (dolist (m '(normal insert))
         (eval `(evil-define-key ',m evil-org-mode-map
                  ;; ctsr
@@ -457,8 +457,144 @@
         "gk" nil
         ;; additional
         (kbd "«") 'org-metaleft
-        (kbd "»") 'org-metaright))))
+        (kbd "»") 'org-metaright))
+    :norman
+    (progn
+      (evil-define-key 'normal evil-org-mode-map 
+                       "o" 'evil-forward-char
+                       "O" 'evil-window-bottom
+                       "l" '(lambda () (interactive) (evil-org-eol-call 'clever-insert-item))
+                       "L" '(lambda () (interactive) (evil-org-eol-call 'org-insert-heading)))
+      ;;(dolist (m '(normal insert))
+        ;;(eval `(evil-define-key ',m evil-org-mode-map
+        ;;          (kbd "M-h") 'eyebrowse-prev-window-config
+        ;;)))
+      )))
 
+(defun keyboard-layout/pre-init-evil-org ()
+  (kl|config evil-org
+    :description
+    "Remap keys in `evil-org-mode'."
+    :loader
+    ;;(with-eval-after-load 'evil-org BODY)
+    (spacemacs|use-package-add-hook 'evil-org :post-config BODY)
+    :norman
+    (progn
+      (evil-define-key 'normal evil-org-mode-map 
+                       "O" 'evil-window-bottom)
+      )))
+
+(defun keyboard-layout/pre-init-evil-cleverparens ()
+  (kl|config evil-cleverparens
+    :description
+    "Remap keys in `evil-cleverparens-mode'."
+    :loader
+    (with-eval-after-load 'evil-cleverparens BODY)
+    ;;(spacemacs|use-package-add-hook 'evil-cleverparens :init-config BODY)
+    :norman
+    (progn
+      (if evil-cleverparens-use-regular-insert
+          ;; in case we change our mind
+          (progn
+            (evil-define-key 'normal evil-cleverparens-mode-map
+              "i" 'evil-previous-line)
+            (remove-hook 'evil-insert-state-exit-hook
+                         'evil-cp-insert-exit-hook))
+        (evil-define-key 'normal evil-cleverparens-mode-map
+          "i" 'evil-previous-line
+          "a" 'evil-cp-append)
+        (evil-define-key 'normal evil-cleverparens-mode-map
+          "O" 'evil-cp-forward-sexp)
+        (add-hook 'evil-insert-state-exit-hook
+                  'evil-cp-insert-exit-hook))
+      (evil-define-key 'normal evil-cleverparens-mode-map
+        "W" 'sp-next-sexp
+        "B" 'sp-end-of-previous-sexp
+        "H" 'sp-up-sexp
+        "O" 'sp-down-sexp
+        (kbd "M-]") 'evil-cp-wrap-next-round
+        (kbd "M-[") 'evil-cp-wrap-previous-round
+        (kbd "M-}") 'evil-cp-wrap-next-square
+        (kbd "M-{") 'evil-cp-wrap-previous-square
+        (kbd "M-e") 'sp-kill-sexp))))
+
+(defun keyboard-layout/pre-init-eww ()
+  (kl|config eww
+    :description
+    "Remap navigation keys in `eww' mode."
+    :loader
+    (spacemacs|use-package-add-hook eww :post-config BODY)
+    :common
+    (kl/evil-correct-keys 'evilified eww-mode-map
+      "h"
+      "j"
+      "k"
+      "l"
+      "C-j"
+      "C-k")
+    :norman
+    (evil-define-key 'evilified eww-mode-map
+      "O" 'eww-forward-url
+      "t" 'eww-lnum-follow
+      "T" 'eww-lnum-universal
+      "U" 'eww-list-histories
+      "-" 'eww-browse-with-external-browser
+      "/" 'eww-previous-urls)))
+(defun keyboard-layout/pre-init-pdf-tools ()
+  (kl|config pdf-tools
+    :description
+    "Remap navigation keys in `pdf-tools' mode."
+    :loader
+    (spacemacs|use-package-add-hook pdf-tools :post-config BODY)
+    ;; (with-eval-after-load 'pdf-tools BODY)
+    :common
+    (progn
+      (kl/evil-correct-keys 'evilified pdf-view-mode-map
+        "h"
+        "j"
+        "k"
+        "l"
+        "J"
+        "K")
+      (kl/evil-correct-keys 'evilified pdf-outline-buffer-mode-map
+        "h"
+        "j"
+        "k"
+        "l"
+        "J"
+        "K")
+      (kl/evil-correct-keys 'evilified pdf-annot-list-mode-map
+        "h"
+        "j"
+        "k"
+        "l"
+        "J"
+        "K")
+      (kl/evil-correct-keys 'evilified pdf-occur-buffer-mode-map
+        "h"
+        "j"
+        "k"
+        "l"))
+    :norman
+    (progn
+      (evil-define-key 'evilified pdf-outline-buffer-mode-map
+        "T"  'pdf-outline-follow-mode
+        "t"  'pdf-outline-display-link)
+      (evil-define-key 'evilified pdf-occur-buffer-mode-map
+        "n"  'evil-next-visual-line
+        "i"  'evil-previous-visual-line))))
+(defun keyboard-layout/pre-init-term ()
+  (kl|config term
+    :description
+    "Remap navigation keys in `term' mode."
+    :loader
+    ;; (spacemacs|use-package-add-hook term :post-config BODY)
+    (with-eval-after-load 'term BODY)
+    :norman
+    (progn
+      (evil-define-key 'insert term-raw-map (kbd "C-a") 'term-send-raw)
+      (evil-define-key 'insert term-raw-map (kbd "C-k") 'term-send-raw)
+      (evil-define-key 'normal term-raw-map (kbd "C-k") 'term-send-raw))))
 (defun keyboard-layout/pre-init-org-agenda ()
   (kl|config org-agenda
     :description
@@ -487,13 +623,13 @@
       "k"
       "l")))
 
-(defun kl/pre-init-twittering-mode ()
+(defun keyboard-layout/pre-init-twittering-mode ()
   (kl|config twittering-mode
     :description
     "Remap navigation keys in `twittering-mode'."
     :loader
     (spacemacs|use-package-add-hook twittering-mode :post-init BODY)
-    :config
+    :common
     (kl/correct-keys twittering-mode-map
       "h"
       "j"
@@ -504,3 +640,26 @@
       "J"
       "K"
       "L")))
+
+(defun keyboard-layout/pre-init-mu4e ()
+  (kl|config mu4e
+    :description
+    "Remap navigation keys in `mu4e' headers and view mode."
+    :loader
+    (spacemacs|use-package-add-hook mu4e :post-config BODY)
+    :common
+    (dolist (map (list mu4e-headers-mode-map
+                       mu4e-view-mode-map))
+      (kl/evil-correct-keys 'evilified map
+        "h"
+        "j"
+        "k"
+        "l"
+        "C-j"
+        "C-k"))
+    :bepo
+    (dolist (map (list mu4e-headers-mode-map
+                       mu4e-view-mode-map))
+      (evil-define-key 'evilified map
+        "è" 'mu4e-headers-mark-subthread
+        "/" 'mu4e-headers-search))))
